@@ -27,9 +27,9 @@ class WC_APIs_Public {
 	 *
 	 * @since    1.0.0
 	 * @access   private
-	 * @var      string    $plugin_name    The ID of this plugin.
+	 * @var      string    $wc_apis    The ID of this plugin.
 	 */
-	private $plugin_name;
+	private $wc_apis;
 
 	/**
 	 * The version of this plugin.
@@ -44,12 +44,12 @@ class WC_APIs_Public {
 	 * Initialize the class and set its properties.
 	 *
 	 * @since    1.0.0
-	 * @param      string    $plugin_name       The name of the plugin.
+	 * @param      string    $wc_apis       The name of the plugin.
 	 * @param      string    $version    The version of this plugin.
 	 */
-	public function __construct( $plugin_name, $version ) {
+	public function __construct( $wc_apis, $version ) {
 
-		$this->plugin_name = $plugin_name;
+		$this->wc_apis = $wc_apis;
 		$this->version = $version;
 
 	}
@@ -73,7 +73,7 @@ class WC_APIs_Public {
 		 * class.
 		 */
 
-		wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'css/wc-apis-public.css', array(), $this->version, 'all' );
+		wp_enqueue_style( $this->wc_apis, plugin_dir_url( __FILE__ ) . 'css/wc-apis-public.css', array(), $this->version, 'all' );
 
 	}
 
@@ -96,7 +96,7 @@ class WC_APIs_Public {
 		 * class.
 		 */
 
-		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/wc-apis-public.js', array( 'jquery' ), $this->version, false );
+		wp_enqueue_script( $this->wc_apis, plugin_dir_url( __FILE__ ) . 'js/wc-apis-public.js', array( 'jquery' ), $this->version, false );
 
 	}
 

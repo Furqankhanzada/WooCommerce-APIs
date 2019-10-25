@@ -41,7 +41,7 @@ define( 'WC_APIS_VERSION', '1.0.0' );
  * The code that runs during plugin activation.
  * This action is documented in includes/class-wc-apis-activator.php
  */
-function activate_plugin_name() {
+function activate_wc_apis() {
 	require_once plugin_dir_path( __FILE__ ) . 'includes/class-wc-apis-activator.php';
 	WC_APIs_Activator::activate();
 }
@@ -50,13 +50,13 @@ function activate_plugin_name() {
  * The code that runs during plugin deactivation.
  * This action is documented in includes/class-wc-apis-deactivator.php
  */
-function deactivate_plugin_name() {
+function deactivate_wc_apis() {
 	require_once plugin_dir_path( __FILE__ ) . 'includes/class-wc-apis-deactivator.php';
 	WC_APIs_Deactivator::deactivate();
 }
 
-register_activation_hook( __FILE__, 'activate_plugin_name' );
-register_deactivation_hook( __FILE__, 'deactivate_plugin_name' );
+register_activation_hook( __FILE__, 'activate_wc_apis' );
+register_deactivation_hook( __FILE__, 'deactivate_wc_apis' );
 
 /**
  * The core plugin class that is used to define internationalization,
@@ -73,10 +73,10 @@ require plugin_dir_path( __FILE__ ) . 'includes/class-wc-apis.php';
  *
  * @since    1.0.0
  */
-function run_plugin_name() {
+function run_wc_apis() {
 
 	$plugin = new WC_APIs();
 	$plugin->run();
 
 }
-run_plugin_name();
+run_wc_apis();

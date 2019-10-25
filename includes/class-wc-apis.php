@@ -44,9 +44,9 @@ class WC_APIs {
 	 *
 	 * @since    1.0.0
 	 * @access   protected
-	 * @var      string    $plugin_name    The string used to uniquely identify this plugin.
+	 * @var      string    $wc_apis    The string used to uniquely identify this plugin.
 	 */
-	protected $plugin_name;
+	protected $wc_apis;
 
 	/**
 	 * The current version of the plugin.
@@ -72,10 +72,11 @@ class WC_APIs {
 		} else {
 			$this->version = '1.0.0';
 		}
-		$this->plugin_name = 'wc-apis';
+		$this->wc_apis = 'wc-apis';
 
 		$this->load_dependencies();
-		$this->set_locale();
+        $this->define_wc_apis_hooks();
+        $this->set_locale();
 		$this->define_admin_hooks();
 		$this->define_public_hooks();
 
@@ -98,6 +99,12 @@ class WC_APIs {
 	 * @access   private
 	 */
 	private function load_dependencies() {
+
+		/**
+		 * The class responsible for orchestrating the actions and filters of the
+		 * core plugin.
+		 */
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'apis/user.php';
 
 		/**
 		 * The class responsible for orchestrating the actions and filters of the
@@ -126,6 +133,23 @@ class WC_APIs {
 
 	}
 
+    /**
+     * Define the apis for WooCommerce
+     *
+     * Uses the WC_APIs_i18n class in order to set the domain and to register the hook
+     * with WordPress.
+     *
+     * @since    1.0.0
+     * @access   private
+     */
+    private function define_wc_apis_hooks() {
+
+        $wc_rest_user_controller = new WC_REST_User_Controller();
+
+        $this->loader->add_action( 'rest_api_init', $wc_rest_user_controller, 'register_routes' );
+
+    }
+
 	/**
 	 * Define the locale for this plugin for internationalization.
 	 *
@@ -152,7 +176,7 @@ class WC_APIs {
 	 */
 	private function define_admin_hooks() {
 
-		$plugin_admin = new WC_APIs_Admin( $this->get_plugin_name(), $this->get_version() );
+		$plugin_admin = new WC_APIs_Admin( $this->get_wc_apis(), $this->get_version() );
 
 		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_styles' );
 		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_scripts' );
@@ -168,7 +192,7 @@ class WC_APIs {
 	 */
 	private function define_public_hooks() {
 
-		$plugin_public = new WC_APIs_Public( $this->get_plugin_name(), $this->get_version() );
+		$plugin_public = new WC_APIs_Public( $this->get_wc_apis(), $this->get_version() );
 
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_styles' );
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_scripts' );
@@ -191,8 +215,8 @@ class WC_APIs {
 	 * @since     1.0.0
 	 * @return    string    The name of the plugin.
 	 */
-	public function get_plugin_name() {
-		return $this->plugin_name;
+	public function get_wc_apis() {
+		return $this->wc_apis;
 	}
 
 	/**
