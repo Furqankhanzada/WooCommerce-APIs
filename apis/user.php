@@ -20,8 +20,11 @@ class WC_REST_User_Controller extends WP_REST_Controller {
     public function register_routes() {
         $version = '1';
         $namespace = 'wc-apis/v' . $version;
-        $base = 'user';
-
+        $base = 'users';
+        register_rest_route( $namespace, '/' . $base, array(
+            'methods' => WP_REST_Server::CREATABLE,
+            'callback' => array( $this, 'create_user' )
+        ));
         register_rest_route( $namespace, '/' . $base, array(
             array(
                 'methods'             => WP_REST_Server::READABLE,
@@ -68,7 +71,6 @@ class WC_REST_User_Controller extends WP_REST_Controller {
             ),
         ) );
     }
-
     /**
      * Get a collection of items
      *
@@ -85,6 +87,53 @@ class WC_REST_User_Controller extends WP_REST_Controller {
 
         return new WP_REST_Response( $data, 200 );
     }
+
+
+    function create_user(WP_REST_Request $request) {
+        $username = $request->get_param('username');
+        $password = $request->get_param('password');
+        $email = $request->get_param('email');
+        $response = array();
+        // $role = sanitize_text_field($parameters['role']);
+        $error = new WP_Error();
+        if (empty($username)) {
+          $error->add(400, __("Username field 'username' is required.", 'wp-rest-user'), array('status' => 400));
+          return $error;
+        }
+        if (empty($email)) {
+          $error->add(401, __("Email field 'email' is required.", 'wp-rest-user'), array('status' => 400));
+          return $error;
+        }
+        if (empty($password)) {
+          $error->add(404, __("'password' is required.", 'wp-rest-user'), array('status' => 400));
+          return $error;
+        }
+       
+        $user_id = username_exists($username);
+        if (!$user_id && email_exists($email) == false) {
+          $user_id = wp_create_user($username, $password, $email);
+          if (!is_wp_error($user_id)) {
+            // Ger User Meta Data (Sensitive, Password included. DO NOT pass to front end.)
+            $user = get_user_by('id', $user_id);
+            // $user->set_role($role);
+            $user->set_role('subscriber');
+            // WooCommerce specific code
+            if (class_exists('WooCommerce')) {
+              $user->set_role('customer');
+            }
+            // Ger User Data (Non-Sensitive, Pass to front end.)
+            $response['code'] = 200;
+            $response['message'] = __("User '" . $username . "' Registration was Successful", "wp-rest-user");
+          } else {
+            return $user_id;
+          }
+        } else {
+          $error->add(406, __("Email already exists, please try 'Reset Password'", 'wp-rest-user'), array('status' => 400));
+          return $error;
+        }
+        return new WP_REST_Response($response, 123);
+    }
+
 
     /**
      * Get one item from the collection
