@@ -36,12 +36,7 @@ class WC_REST_Category_Controller extends WP_REST_Controller {
 
     function get_categories() {
         $args = array(
-            'taxonomy'   => "product_cat",
-            'number'     => $number,
-            'orderby'    => $orderby,
-            'order'      => $order,
-            'hide_empty' => $hide_empty,
-            'include'    => $ids
+            'taxonomy'   => "product_cat"
         );
         $args['exclude'] = get_option( 'default_product_cat' );
         $categories_list = get_terms($args);
