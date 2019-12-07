@@ -36,12 +36,20 @@ class WC_REST_Category_Controller extends WP_REST_Controller {
 
     function get_categories() {
         $args = array(
-            'taxonomy'   => "product_cat"
+            'taxonomy'   => "product_cat",
+            'lang'     => ''
         );
         $args['exclude'] = get_option( 'default_product_cat' );
         $categories_list = get_terms($args);
-    
-        return $categories_list;
+        $response = [];
+        foreach($categories_list as $category ){
+            $category = wpm_translate_object($category, "ar");
+            $thumbnail_id = get_woocommerce_term_meta( $category->term_id, 'thumbnail_id', true );
+            $image = wp_get_attachment_url( $thumbnail_id );
+            $category->thumbnail = $image;
+            $response[] = $category;
+        }
+        return $response;
     }
     /**
      * Get the query params for collections

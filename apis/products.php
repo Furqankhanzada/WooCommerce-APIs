@@ -29,6 +29,14 @@ class WC_REST_Product_Controller extends WP_REST_Controller {
             'methods' => 'GET',
             'callback' => array( $this, 'get_product' )
         ));
+        register_rest_route( $namespace, '/currency', array(
+            'methods' => 'GET',
+            'callback' => array( $this, 'get_currency_symbol' )
+        ));
+        register_rest_route( $namespace, '/currency', array(
+            'methods' => 'GET',
+            'callback' => array( $this, 'get_currency_symbol' )
+        ));
     }
     /**
      * Get a collection of items
@@ -38,10 +46,10 @@ class WC_REST_Product_Controller extends WP_REST_Controller {
      */
    
     function get_newarrivals(WP_REST_Request $request) {
+        $lang = $request->get_param('lang');
         $args = array(
             'post_type' => 'product',
             'stock' => 1,
-            'posts_per_page' => 12,
             'orderby' =>'date',
             'order' => 'DESC' );
             $products = wc_get_products( $args );
@@ -51,9 +59,13 @@ class WC_REST_Product_Controller extends WP_REST_Controller {
                     'thumbnail' => wp_get_attachment_url( $product->get_image_id())
                 ]);
             }
-            return $response;
+            return wpm_translate_value( $response, $lang );
+            // return $response;
     }
-   
+
+    function get_currency_symbol(WP_REST_Request $request) {
+        return get_woocommerce_currency_symbol();
+    }
     function get_product(WP_REST_Request $request) {
         // $meta_query = [];
         // $tax_query = [];
@@ -103,19 +115,19 @@ class WC_REST_Product_Controller extends WP_REST_Controller {
         //   $wpquery = new WP_Query($query);
         //   return $wpquery->get_posts();
 
-
-
-        $args = array(
-            'limit' => 4,
-        );
+        $lang = $request->get_param('lang');
+        $args = array();
         $products = wc_get_products( $args );
         $response = [];
         foreach($products as $product ){
+            
             $response[] = array_merge($product->get_data(), [
                 'thumbnail' => wp_get_attachment_url( $product->get_image_id())
             ]);
         }
-        return $response;
+        // return wpm_translate_value( $response );
+    //    return wpm_translate_object($response[0], wpm_get_default_language());
+        return wpm_translate_value( $response, $lang );
     }
     /**
      * Get the query params for collections

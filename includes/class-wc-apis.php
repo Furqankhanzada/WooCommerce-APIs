@@ -118,6 +118,10 @@ class WC_APIs {
 		 */
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'apis/products.php';
 
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'apis/payment.php';
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'apis/orders.php';
+
+
 		/**
 		 * The class responsible for orchestrating the actions and filters of the
 		 * core plugin.
@@ -162,11 +166,19 @@ class WC_APIs {
 		
 		$wc_rest_category_controller = new WC_REST_Category_Controller();
 
-        $this->loader->add_action( 'rest_api_init', $wc_rest_category_controller, 'register_routes' );
+		$this->loader->add_action( 'rest_api_init', $wc_rest_category_controller, 'register_routes' );
+		
+		$wc_rest_payment_controller = new WC_REST_Payment_Controller();
+
+        $this->loader->add_action( 'rest_api_init', $wc_rest_payment_controller, 'register_routes' );
 
 		$wc_rest_product_controller = new WC_REST_Product_Controller();
 
-        $this->loader->add_action( 'rest_api_init', $wc_rest_product_controller, 'register_routes' );
+		$this->loader->add_action( 'rest_api_init', $wc_rest_product_controller, 'register_routes' );
+		
+		$wc_rest_order_controller = new WC_REST_Order_Controller();
+
+        $this->loader->add_action( 'rest_api_init', $wc_rest_order_controller, 'register_routes' );
     }
 
 	/**
